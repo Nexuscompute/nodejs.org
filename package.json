@@ -30,7 +30,7 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@metalsmith/markdown": "^1.4.0",
+    "@metalsmith/markdown": "^1.5.0",
     "@metalsmith/permalinks": "^2.3.0",
     "autoprefixer": "^10.4.1",
     "cheerio": "^0.22.0",
@@ -41,8 +41,8 @@
     "jstransformer-handlebars": "^1.1.0",
     "junk": "^3.1.0",
     "lodash.defaultsdeep": "^4.6.1",
-    "marked": "^4.0.8",
-    "metalsmith": "^2.3.0",
+    "marked": "^4.0.10",
+    "metalsmith": "^2.5.0",
     "metalsmith-collections": "^0.9.0",
     "metalsmith-discover-helpers": "^0.1.1",
     "metalsmith-discover-partials": "^0.1.2",
