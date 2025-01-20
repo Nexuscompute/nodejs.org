@@ -3,26 +3,25 @@
 /**
  * This is used to verify if the current Website is running on a Development Environment
  */
-export const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
+export const IS_DEV_ENV = process.env.NODE_ENV === 'development';
 
 /**
  * This is used for telling Next.js if the Website is deployed on Vercel
  *
  * Can be used for conditionally enabling features that we know are Vercel only
  *
- * @see https://vercel.com/docs/concepts/projects/environment-variables/system-environment-variables#framework-environment-variables
+ * @see https://vercel.com/docs/projects/environment-variables/system-environment-variables#VERCEL_ENV
  */
-export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV || undefined;
+export const VERCEL_ENV = process.env.VERCEL_ENV || undefined;
 
 /**
- * This is used for defining a default time of when `next-data` and other dynamically generated
- * but static-enabled pages should be regenerated.
+ * This is used for telling Next.js if we are current during build time or in runtime environment
  *
- * Note that this is a custom Environment Variable that can be defined by us when necessary
+ * Can be used for conditionally enabling features that we know are Vercel only
+ *
+ * @see https://vercel.com/docs/projects/environment-variables/system-environment-variables#VERCEL_REGION
  */
-export const VERCEL_REVALIDATE = Number(
-  process.env.NEXT_PUBLIC_VERCEL_REVALIDATE_TIME || 300
-);
+export const VERCEL_REGION = process.env.VERCEL_REGION || undefined;
 
 /**
  * This is used for telling Next.js to do a Static Export Build of the Website
@@ -37,6 +36,17 @@ export const ENABLE_STATIC_EXPORT =
   process.env.NEXT_PUBLIC_STATIC_EXPORT === true;
 
 /**
+ * This is used to ensure that pages are Static Export for all locales or only
+ * in the default (`en`) locale.
+ *
+ * Note that this is a manual Environment Variable defined by us during the
+ * build process in CI.
+ */
+export const ENABLE_STATIC_EXPORT_LOCALE =
+  process.env.NEXT_PUBLIC_STATIC_EXPORT_LOCALE === 'true' ||
+  process.env.NEXT_PUBLIC_STATIC_EXPORT_LOCALE === true;
+
+/**
  * This is used for any place that requires the full canonical URL path for the Node.js Website (and its deployment), such as for example, the Node.js RSS Feed.
  *
  * This variable can either come from the Vercel Deployment as `NEXT_PUBLIC_VERCEL_URL` or from the `NEXT_PUBLIC_BASE_URL` Environment Variable that is manually defined
@@ -46,8 +56,8 @@ export const ENABLE_STATIC_EXPORT =
  */
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
   ? process.env.NEXT_PUBLIC_BASE_URL
-  : process.env.NEXT_PUBLIC_VERCEL_URL
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+  : process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
     : 'https://nodejs.org';
 
 /**
@@ -100,6 +110,17 @@ export const NEXT_DATA_URL = process.env.NEXT_PUBLIC_DATA_URL
 export const MD_EXTENSION_REGEX = /((\/)?(index))?\.mdx?$/i;
 
 /**
+ * This is the default type of blog post type that we use for OG Meta Tags
+ */
+export const DEFAULT_CATEGORY_OG_TYPE = 'announcement';
+
+/**
+ * This is the base url for changelog entries
+ */
+export const BASE_CHANGELOG_URL =
+  'https://github.com/nodejs/node/releases/tag/v';
+
+/**
  * This defines how many blog posts each pagination page should have
  */
 export const BLOG_POSTS_PER_PAGE = 6;
@@ -130,8 +151,7 @@ export const EXTERNAL_LINKS_SITEMAP = [
  * @see https://docs.oramasearch.com/open-source/usage/search/introduction
  */
 export const DEFAULT_ORAMA_QUERY_PARAMS = {
-  mode: 'fulltext',
-  limit: 8,
+  limit: 25,
   threshold: 0,
   boost: {
     pageSectionTitle: 4,
@@ -142,6 +162,15 @@ export const DEFAULT_ORAMA_QUERY_PARAMS = {
     siteSection: {},
   },
 };
+
+/**
+ * The initial Orama Cloud chat suggestions visible in the empty state of the search box.
+ */
+export const DEFAULT_ORAMA_SUGGESTIONS = [
+  'How to install Node.js?',
+  'How to create an HTTP server?',
+  'Upgrading Node.js version',
+];
 
 /**
  * The default batch size to use when syncing Orama Cloud
@@ -159,7 +188,8 @@ export const ORAMA_CLOUD_ENDPOINT =
  * The default Orama Cloud API Key to use when searching with Orama Cloud.
  * This is a public API key and can be shared publicly on the frontend.
  */
-export const ORAMA_CLOUD_API_KEY = process.env.NEXT_PUBLIC_ORAMA_API_KEY || '';
+export const ORAMA_CLOUD_API_KEY =
+  process.env.NEXT_PUBLIC_ORAMA_API_KEY || 'qopIuAERiWP2EZOpDjvczjws7WV40yrj';
 
 /**
  * A GitHub Access Token for accessing the GitHub API and not being rate-limited
@@ -170,16 +200,7 @@ export const ORAMA_CLOUD_API_KEY = process.env.NEXT_PUBLIC_ORAMA_API_KEY || '';
 export const GITHUB_API_KEY = process.env.NEXT_GITHUB_API_KEY || '';
 
 /**
- * OpenJS Ecosystem Support Program (ESP) partners provide security updates and support for end-of-life and unsupported versions
- *
- * See https://openjsf.org/ecosystem-sustainability-program
- *
- * This is the minimum version Node.js support according to https://nodejs.org/en/about/previous-releases
+ * The resource we point people to when discussing internationalization efforts.
  */
-export const ESP_SUPPORT_THRESHOLD_VERSION =
-  process.env.ESP_SUPPORT_THRESHOLD_VERSION || '18.0.0';
-
-/**
- * This deep link into the app is repeated in the top nav, but we want to ignore it for active-link highlighting, since it will be covered by About
- */
-export const VERSION_SUPPORT_SHORTCUT = '/about/previous-releases';
+export const TRANSLATION_URL =
+  'https://github.com/nodejs/nodejs.org/blob/main/TRANSLATION.md#how-to-translate';

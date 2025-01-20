@@ -1,19 +1,17 @@
 'use client';
 
 import { ArrowRightIcon } from '@heroicons/react/24/solid';
-import { captureException } from '@sentry/nextjs';
 import { useTranslations } from 'next-intl';
 import type { FC } from 'react';
 
 import Button from '@/components/Common/Button';
 import GlowingBackdropLayout from '@/layouts/GlowingBackdrop';
 
-const ErrorPage: FC<{ error: Error }> = ({ error }) => {
-  captureException(error);
+const ErrorPage: FC<{ error: Error }> = () => {
   const t = useTranslations();
 
   return (
-    <GlowingBackdropLayout>
+    <GlowingBackdropLayout kind="default">
       500
       <h1 className="special -mt-4 text-center">
         {t('layouts.error.internalServerError.title')}

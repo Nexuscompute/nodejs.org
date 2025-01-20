@@ -46,7 +46,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
         with:
           egress-policy: audit
 
@@ -65,7 +65,7 @@ jobs:
         run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
 
       - name: Git Checkout
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           # Provides the Pull Request commit SHA or the GitHub merge group ref
           ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
@@ -76,7 +76,7 @@ jobs:
           # regardless of having code changes or not
           fetch-depth: 1
 
-      - uses: actions/cache@2cdf405574d6ef1f33a1d12acccd3ae82f47b3f2 # v4.1.0
+      - uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         with:
           # See here for caching with `yarn` https://github.com/actions/cache/blob/main/examples.md#node---yarn or you can leverage caching with actions/setup-node https://github.com/actions/setup-node
           path: |
@@ -89,7 +89,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Set up Node.js
-        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           # We want to ensure that the Node.js version running here respects our supported versions
           node-version-file: '.nvmrc'
@@ -114,11 +114,29 @@ jobs:
           # Used for API requests that require GitHub API scopes
           NEXT_GITHUB_API_KEY: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Next.js (Static)
-        # We only run full static builds within Pull Requests. As they're not needed on `merge_group` or `push` events
+      - name: Build Next.js (Static All Locales)
+        # We only run full static builds within Pull Requests. This step is also used to export
+        # static output in all languages, and it only works on `push` events.
+        if: github.event_name == 'push'
+        # We want to enforce that the actual `turbo@latest` package is used instead of a possible hijack from the user
+        # the `${{ steps.turborepo_arguments.outputs.turbo_args }}` is a string substitution coming from a previous step
+        run: npx --package=turbo@latest -- turbo deploy ${{ steps.turborepo_arguments.outputs.turbo_args }}
+        env:
+          # We want to ensure we have enough RAM allocated to the Node.js process
+          # this should be a last resort in case by any chances the build memory gets too high
+          # but in general this should never happen
+          NODE_OPTIONS: '--max_old_space_size=4096'
+          # Used for API requests that require GitHub API scopes
+          NEXT_GITHUB_API_KEY: ${{ secrets.GITHUB_TOKEN }}
+          # We want to ensure that static exports for all locales are triggered only on `push` events to save resources
+          # and time.
+          NEXT_PUBLIC_STATIC_EXPORT_LOCALE: true
+
+      - name: Build Next.js (Static Default Locale)
+        # We want to generate static output in the default language within Pull Requests
+        # in order to reduce source wastages and build times.
         # Note that we skip full static builds on Crowdin-based Pull Requests as these PRs should only contain translation changes
         if: |
-          (github.event_name == 'push') ||
           (github.event_name == 'pull_request_target' &&
             github.event.pull_request.head.ref != 'chore/crowdin')
         # We want to enforce that the actual `turbo@latest` package is used instead of a possible hijack from the user
@@ -131,6 +149,8 @@ jobs:
           NODE_OPTIONS: '--max_old_space_size=4096'
           # Used for API requests that require GitHub API scopes
           NEXT_GITHUB_API_KEY: ${{ secrets.GITHUB_TOKEN }}
+          # We want to ensure that static exports for all locales do not occur on `pull_request_target` events
+          NEXT_PUBLIC_STATIC_EXPORT_LOCALE: false
 
       - name: Sync Orama Cloud
         # We only want to sync the Orama Cloud production indexes on `push` events.

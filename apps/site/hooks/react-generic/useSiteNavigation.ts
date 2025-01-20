@@ -1,5 +1,5 @@
-import { useTranslations } from 'next-intl';
 import type { RichTranslationValues } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import type { HTMLAttributeAnchorTarget } from 'react';
 
 import { siteNavigation } from '@/next.json.mjs';
@@ -38,8 +38,8 @@ const useSiteNavigation = () => {
   const t = useTranslations();
 
   const mapNavigationEntries = (entries: Navigation, context: Context = {}) => {
-    const getFormattedMessage = (label: string, key: string) =>
-      t.rich(label, context[key] || {});
+    const getFormattedMessage = (label: IntlMessageKeys, key: string) =>
+      t.rich(label, context[key] || {}) as FormattedMessage;
 
     return Object.entries(entries).map(
       ([key, { label, link, items, target }]): [

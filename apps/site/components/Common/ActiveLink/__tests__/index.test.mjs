@@ -1,10 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
-import { VERSION_SUPPORT_SHORTCUT } from '@/next.constants.mjs';
-
 import ActiveLink from '..';
 
-// mock usePathname, but retain all the other imports
 jest.mock('@/navigation.mjs', () => ({
   ...jest.requireActual('@/navigation.mjs'),
   usePathname: jest.fn(),
@@ -57,45 +54,6 @@ describe('ActiveLink', () => {
         activeClassName="active"
         allowSubPath={true}
         href={'/link/sub-link'}
-      >
-        Link
-      </ActiveLink>
-    );
-
-    expect(screen.findByText('Link')).resolves.toHaveAttribute('class', 'link');
-  });
-
-  it('sets active class when href is other than VERSION_SUPPORT_SHORTCUT', () => {
-    const { usePathname } = require('@/navigation.mjs');
-    usePathname.mockReturnValue('/link/sublink');
-
-    render(
-      <ActiveLink
-        className="link"
-        activeClassName="active"
-        allowSubPath={true}
-        href={'/link/sub-link'}
-      >
-        Link
-      </ActiveLink>
-    );
-
-    expect(screen.findByText('Link')).resolves.toHaveAttribute(
-      'class',
-      'link active'
-    );
-  });
-
-  it('does not set active class when href is VERSION_SUPPORT_SHORTCUT', () => {
-    const { usePathname } = require('@/navigation.mjs');
-    usePathname.mockReturnValue(VERSION_SUPPORT_SHORTCUT);
-
-    render(
-      <ActiveLink
-        className="link"
-        activeClassName="active"
-        allowSubPath={true}
-        href={VERSION_SUPPORT_SHORTCUT}
       >
         Link
       </ActiveLink>

@@ -3,11 +3,12 @@
 import Hamburger from '@heroicons/react/24/solid/Bars3Icon';
 import XMark from '@heroicons/react/24/solid/XMarkIcon';
 import * as Label from '@radix-ui/react-label';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import type { FC, ComponentProps, HTMLAttributeAnchorTarget } from 'react';
 
 import LanguageDropdown from '@/components/Common/LanguageDropDown';
-import { SearchButton } from '@/components/Common/Search';
+import Skeleton from '@/components/Common/Skeleton';
 import ThemeToggle from '@/components/Common/ThemeToggle';
 import NavItem from '@/components/Containers/NavBar/NavItem';
 import GitHub from '@/components/Icons/Social/GitHub';
@@ -16,6 +17,13 @@ import WithNodejsLogo from '@/components/withNodejsLogo';
 import type { FormattedMessage } from '@/types';
 
 import style from './index.module.css';
+
+const SearchButton = dynamic(() => import('@/components/Common/Search'), {
+  ssr: false,
+  loading: () => (
+    <Skeleton className={style.searchButtonSkeleton} loading={true} />
+  ),
+});
 
 const navInteractionIcons = {
   show: <Hamburger className={style.navInteractionIcon} />,
